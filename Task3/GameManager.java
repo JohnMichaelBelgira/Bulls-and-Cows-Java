@@ -1,0 +1,78 @@
+package Task3;
+public class GameManager
+{
+    private int maxAttempts=7;
+    private int currentAttempt=0;
+    private HumanPlayer human;
+    private ComputerPlayer computer;
+    private CodeEvaluator evaluator;
+    public GameManager()
+    {
+        human=new HumanPlayer();
+        computer=new ComputerPlayer();
+        evaluator=new CodeEvaluator();
+    }
+    public void startGame()
+    {
+        System.out.println("=== Welcome to Bulls and Cows (vs Easy AI) ===");
+        //Computer generates its code at the start
+        computer.setSecretCode();
+        System.out.println("The computer has generated a 4-digit secret code.");
+        //Player enters their secret code for the computer to guess
+        human.setSecretCode();
+        System.out.println("\nGame Starts! Both sides have up to "+maxAttempts+" attempts.");
+        boolean humanWon=false;
+        boolean computerWon=false;
+        // Main game loop (Taking Turns)
+        while (currentAttempt<maxAttempts&&!humanWon&&!computerWon)
+        {
+            currentAttempt++;
+            System.out.println("\n--- Round "+currentAttempt+" ---");
+            //HUMAN TURN
+            System.out.println("Your Turn:");
+            String humanGuess=human.generateGuess();
+            String computerSecret=computer.getSecretCode();
+            int humanBulls=evaluator.getBulls(humanGuess, computerSecret);
+            int humanCows=evaluator.getCows(humanGuess, computerSecret);
+            System.out.println("Result: "+humanBulls+" Bulls, "+humanCows +"  Cows");
+            if (humanBulls==4)
+            {
+                humanWon=true;
+            }
+            //COMPUTER TURN
+            System.out.println("\nComputer's Turn:");
+            String computerGuess=computer.generateGuess();
+            System.out.println("Computer guessed: "+computerGuess);
+            String humanSecret=human.getSecretCode();
+            int computerBulls=evaluator.getBulls(computerGuess, humanSecret);
+            int computerCows=evaluator.getCows(computerGuess, humanSecret);
+            System.out.println("Result: "+computerBulls+" Bulls, "+computerCows+" Cows");
+            if (computerBulls==4)
+            {
+                computerWon=true;
+            }
+        }
+        //GAME END
+        System.out.println("\n=== Game Over ===");
+        if (humanWon&&computerWon)
+        {
+            System.out.println("It's a Tie! Both of you guessed the correct code in round "+currentAttempt+".");
+            System.out.println("Computer's code was: "+computer.getSecretCode());
+        }
+        else if (humanWon)
+        {
+            System.out.println("Congratulations! You guessed the computer's code: "+computer.getSecretCode());
+            System.out.println("You won in " +currentAttempt+" attempts!");
+        }
+        else if (computerWon)
+        {
+            System.out.println("The computer won! It guessed your secret code: "+human.getSecretCode());
+            System.out.println("Computer's code was: "+computer.getSecretCode());
+        }
+        else
+        {
+            System.out.println("It's a draw! Both sides used all "+maxAttempts+" attempts without guessing the code.");
+            System.out.println("The computer's secret code was: "+computer.getSecretCode());
+        }
+    }
+}
